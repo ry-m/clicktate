@@ -40,7 +40,12 @@ def main():
 
         # Updating
         clock.tick(FPS)
-        player.move()
+        if player.alive:
+            player.move()
+            player.alive = not player.touching_edge(screen)
+        else:
+            print("Player dead.")
+            running = False
 
     pygame.quit()
 

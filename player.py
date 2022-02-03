@@ -4,10 +4,10 @@ from itertools import cycle
 import pygame
 from pygame.sprite import Sprite
 from pygame import gfxdraw
+from pygame.surface import Surface
 
-# Player circle radius.
+
 RADIUS = 12
-# Player speed.
 SPEED = 2
 
 
@@ -34,6 +34,7 @@ class Player(Sprite):
         self.y = self.rect.center[1]
         self.all_dirs = cycle([Direction.NORTH_WEST, Direction.SOUTH_WEST, Direction.SOUTH_EAST, Direction.NORTH_EAST])
         self.direction = next(self.all_dirs)
+        self.alive = True
 
     def set_pos(self, x, y):
         """
@@ -67,3 +68,12 @@ class Player(Sprite):
         Change the sprite direction (clockwise).
         """
         self.direction = next(self.all_dirs)
+
+    def touching_edge(self, screen: Surface) -> bool:
+        """
+        Check if the player is touching the edge of the display.
+        :param screen: The display surface
+        :return: True if the player is touching the edge.
+        """
+        sx, sy = screen.get_size()
+        return self.x+RADIUS > sx or self.y+RADIUS > sy or self.x-RADIUS < 0 or self.y-RADIUS < 0
