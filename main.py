@@ -5,7 +5,7 @@ from pygame.constants import GL_MULTISAMPLEBUFFERS, GL_MULTISAMPLESAMPLES
 from sprites.obstacle import Obstacle
 from sprites.player import Player
 from sprites.reward import Reward
-from score import Score
+from score import BAR_HEIGHT, Score
 
 # Constants.
 SIZE = (800, 600)
@@ -26,7 +26,7 @@ def spawn_reward() -> Reward:
     :return: Reward sprite
     """
     rx = float(random.randint(REWARD_SPAWN_OFFSET, SIZE[0] - REWARD_SPAWN_OFFSET))
-    ry = float(random.randint(REWARD_SPAWN_OFFSET, SIZE[1] - REWARD_SPAWN_OFFSET))
+    ry = float(random.randint(REWARD_SPAWN_OFFSET + BAR_HEIGHT, SIZE[1] - REWARD_SPAWN_OFFSET))
     return Reward((rx, ry))
 
 
