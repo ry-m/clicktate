@@ -30,6 +30,7 @@ class Player(Sprite):
         super(Player, self).__init__()
         self.image = pygame.surface.Surface((RADIUS * 2, RADIUS * 2))
         self.rect = self.image.get_rect(center=pos)
+        self.radius = RADIUS
         self.x = self.rect.center[0]
         self.y = self.rect.center[1]
         self.all_dirs = cycle([Direction.NORTH_WEST, Direction.SOUTH_WEST, Direction.SOUTH_EAST, Direction.NORTH_EAST])
