@@ -1,23 +1,69 @@
+from enum import Enum
+from itertools import cycle
+
 import pygame
 from pygame.sprite import Sprite
 from pygame import gfxdraw
 
 # Player circle radius.
 RADIUS = 12
+# Player speed.
+SPEED = 2
+
+
+class Direction(Enum):
+    """
+    Represents a diagonal direction the sprite travels in.
+    Value is the x/y change respectively.
+    """
+    NORTH_EAST = (1, 1)
+    SOUTH_EAST = (1, -1)
+    SOUTH_WEST = (-1, -1)
+    NORTH_WEST = (-1, 1)
 
 
 class Player(Sprite):
+    """
+    The player sprite is represented as a filled black circle.
+    """
     def __init__(self, pos: tuple[float, float]):
         super(Player, self).__init__()
         self.image = pygame.surface.Surface((RADIUS * 2, RADIUS * 2))
-        self.image.fill((0, 0, 0))
-        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect(center=pos)
+        self.x = self.rect.center[0]
+        self.y = self.rect.center[1]
+        self.all_dirs = cycle([Direction.NORTH_WEST, Direction.SOUTH_WEST, Direction.SOUTH_EAST, Direction.NORTH_EAST])
+        self.direction = next(self.all_dirs)
+
+    def set_pos(self, x, y):
+        """
+        Set the player position.
+        :param x: x position
+        :param y: y position
+        """
+        self.x = x
+        self.y = y
+        self.rect.center = (x, y)
 
     def draw(self, surface: pygame.Surface):
         """
         Render the player onto the surface.
         The player sprite is represented by a filled black circle.
-        :param surface: Surface of the main display.
+        :param surface: surface of the main display.
         """
-        gfxdraw.filled_circle(surface, self.rect.center[0], self.rect.center[1], RADIUS, (0, 0, 0))
+        gfxdraw.filled_circle(surface, self.x, self.y, RADIUS, (0, 0, 0))
+
+    def move(self):
+        """
+        Move the sprite in its current diagonal direction.
+        """
+        self.set_pos(
+            self.x + self.direction.value[0] * SPEED,
+            self.y + self.direction.value[1] * SPEED
+        )
+
+    def change_direction(self):
+        """
+        Change the sprite direction (clockwise).
+        """
+        self.direction = next(self.all_dirs)
