@@ -2,16 +2,21 @@ import random
 import pygame
 from pygame.constants import GL_MULTISAMPLEBUFFERS, GL_MULTISAMPLESAMPLES
 
+from obstacle import Obstacle
 from player import Player
 from reward import Reward
-
 
 # Constants.
 SIZE = (800, 600)
 FPS = 60
 BG_COLOUR = (210, 255, 120)
-CENTER = (SIZE[0]/2, SIZE[1]/2)
+CENTER = (SIZE[0] / 2, SIZE[1] / 2)
 REWARD_SPAWN_OFFSET = 60
+
+# Events
+spawn_obs_event = pygame.USEREVENT + 1
+activate_obs_event = pygame.USEREVENT + 2
+deactivate_obs_event = pygame.USEREVENT + 3
 
 
 def spawn_reward() -> Reward:
@@ -22,6 +27,12 @@ def spawn_reward() -> Reward:
     rx = float(random.randint(REWARD_SPAWN_OFFSET, SIZE[0] - REWARD_SPAWN_OFFSET))
     ry = float(random.randint(REWARD_SPAWN_OFFSET, SIZE[1] - REWARD_SPAWN_OFFSET))
     return Reward((rx, ry))
+
+
+def trigger_obs():
+    time = random.randint(5500, 10500)
+    pygame.time.set_timer(spawn_obs_event, time, loops=1)  # Spawn event.
+    pygame.time.set_timer(activate_obs_event, time + 1000, loops=1)  # Activate event (1.5s after spawn)
 
 
 def main():
@@ -36,9 +47,11 @@ def main():
 
     player = Player(CENTER)
     reward = spawn_reward()
+    obstacle = Obstacle(player)
     score = 0
 
     running = True
+    trigger_obs()
 
     while running:
         # Handle events.
@@ -47,22 +60,32 @@ def main():
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.change_direction()
+            if event.type == spawn_obs_event:
+                obstacle.spawn()
+            if event.type == activate_obs_event:
+                obstacle.activate()
+                pygame.time.set_timer(deactivate_obs_event, 1500, loops=1)
+            if event.type == deactivate_obs_event:
+                obstacle.deactivate()
+                trigger_obs()
 
         # Rendering.
         screen.fill(BG_COLOUR)
         reward.draw(screen)
         player.draw(screen)
+        obstacle.draw(screen)
         pygame.display.flip()
 
         # Updating
         clock.tick(FPS)
         if player.alive:
             player.move()
-            if pygame.sprite.collide_circle(player, reward):
+            if pygame.sprite.collide_mask(player, reward):
                 score += 15
                 print(f'Score: {score}')
                 reward = spawn_reward()
-            player.alive = not player.touching_edge(screen)
+            player.alive = not player.touching_edge(screen) and not \
+                (pygame.sprite.collide_mask(player, obstacle) and obstacle.is_active())
         else:
             print("Player dead.")
             running = False

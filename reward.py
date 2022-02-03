@@ -11,6 +11,7 @@ class Reward(Sprite):
         super(Reward, self).__init__()
         self.image = pygame.image.load('resources/reward.png')
         self.image = pygame.transform.smoothscale(self.image, (SIZE, SIZE))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=pos)
 
     def draw(self, screen: Surface):

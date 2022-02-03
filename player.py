@@ -3,12 +3,12 @@ from itertools import cycle
 
 import pygame
 from pygame.sprite import Sprite
-from pygame import gfxdraw
 from pygame.surface import Surface
 
 
 RADIUS = 12
 SPEED = 2
+SIZE = 24
 
 
 class Direction(Enum):
@@ -28,9 +28,10 @@ class Player(Sprite):
     """
     def __init__(self, pos: tuple[float, float]):
         super(Player, self).__init__()
-        self.image = pygame.surface.Surface((RADIUS * 2, RADIUS * 2))
+        self.image = pygame.image.load("resources/player.png")
+        self.image = pygame.transform.smoothscale(self.image, (SIZE, SIZE))
         self.rect = self.image.get_rect(center=pos)
-        self.radius = RADIUS
+        self.mask = pygame.mask.from_surface(self.image)
         self.x = self.rect.center[0]
         self.y = self.rect.center[1]
         self.all_dirs = cycle([Direction.NORTH_WEST, Direction.SOUTH_WEST, Direction.SOUTH_EAST, Direction.NORTH_EAST])
@@ -53,7 +54,7 @@ class Player(Sprite):
         The player sprite is represented by a filled black circle.
         :param surface: surface of the main display.
         """
-        gfxdraw.filled_circle(surface, self.x, self.y, RADIUS, (0, 0, 0))
+        surface.blit(self.image, self.rect)
 
     def move(self):
         """
