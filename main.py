@@ -2,9 +2,10 @@ import random
 import pygame
 from pygame.constants import GL_MULTISAMPLEBUFFERS, GL_MULTISAMPLESAMPLES
 
-from obstacle import Obstacle
-from player import Player
-from reward import Reward
+from sprites.obstacle import Obstacle
+from sprites.player import Player
+from sprites.reward import Reward
+from score import Score
 
 # Constants.
 SIZE = (800, 600)
@@ -48,7 +49,7 @@ def main():
     player = Player(CENTER)
     reward = spawn_reward()
     obstacle = Obstacle(player)
-    score = 0
+    score = Score(SIZE[0])
 
     running = True
     trigger_obs()
@@ -74,6 +75,7 @@ def main():
         reward.draw(screen)
         player.draw(screen)
         obstacle.draw(screen)
+        score.draw(screen)
         pygame.display.flip()
 
         # Updating
@@ -81,8 +83,8 @@ def main():
         if player.alive:
             player.move()
             if pygame.sprite.collide_mask(player, reward):
-                score += 15
-                print(f'Score: {score}')
+                score.update(15)
+                print(f'Score: {score.score}')
                 reward = spawn_reward()
             player.alive = not player.touching_edge(screen) and not \
                 (pygame.sprite.collide_mask(player, obstacle) and obstacle.is_active())

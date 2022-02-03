@@ -4,7 +4,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 
-from player import Player
+from sprites.player import Player
 
 SIZE = 24
 DIST_FROM_PLAYER = 60
@@ -19,6 +19,13 @@ class ObstacleState(Enum):
 
 
 class Obstacle(Sprite):
+    """
+    An obstacle is represented as an orange triangle. It has four states:
+    inactive: not visible, not active.
+    spawning: the obstacle is fading in, still inactive.
+    lurking: the obstacle is following the player.
+    active: the obstacle plants itself, becomes active.
+    """
     def __init__(self, player: Player):
         super(Obstacle, self).__init__()
         self.state = ObstacleState.INACTIVE
@@ -30,23 +37,43 @@ class Obstacle(Sprite):
         self.alpha = 0
 
     def is_active(self) -> bool:
+        """
+        :return: True if the obstacle is in an active state.
+        """
         return self.state == ObstacleState.ACTIVE
 
     def get_pos_from_player(self) -> tuple[float, float]:
+        """
+        Retrieve the offset position from the player's current position.
+        :return: Coordinates of the obstacle position.
+        """
         ox = self.player.x + self.player.direction.value[0]*DIST_FROM_PLAYER
         oy = self.player.y + self.player.direction.value[1]*DIST_FROM_PLAYER
         return float(ox), float(oy)
 
     def spawn(self):
+        """
+        Set the state to SPAWNING
+        """
         self.state = ObstacleState.SPAWNING
 
     def activate(self):
+        """
+        Set the state to ACTIVE
+        """
         self.state = ObstacleState.ACTIVE
 
     def deactivate(self):
+        """
+        Set the state to INACTIVE
+        """
         self.state = ObstacleState.INACTIVE
 
     def draw(self, screen: Surface):
+        """
+        Draw the sprite.
+        :param screen: Screen for rendering.
+        """
         if self.state == ObstacleState.INACTIVE:
             self.alpha = max(0, self.alpha - FADE_SPEED)
         elif self.state == ObstacleState.SPAWNING:

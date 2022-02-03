@@ -5,6 +5,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 
+import score
 
 RADIUS = 12
 SPEED = 2
@@ -78,4 +79,4 @@ class Player(Sprite):
         :return: True if the player is touching the edge.
         """
         sx, sy = screen.get_size()
-        return self.x+RADIUS > sx or self.y+RADIUS > sy or self.x-RADIUS < 0 or self.y-RADIUS < 0
+        return self.x+RADIUS > sx or self.y+RADIUS > sy or self.x-RADIUS < 0 or self.y-RADIUS < score.BAR_HEIGHT
