@@ -1,4 +1,6 @@
 import random
+from enum import Enum
+
 import pygame
 from pygame.constants import GL_MULTISAMPLEBUFFERS, GL_MULTISAMPLESAMPLES
 
@@ -21,13 +23,20 @@ activate_obs_event = pygame.USEREVENT + 2
 deactivate_obs_event = pygame.USEREVENT + 3
 
 
+class GameState(Enum):
+    INTRO_ANIM = 0,
+    CLICK_TO_START = 1,
+    RUNNING = 2,
+    GAME_OVER = 3
+
+
 def spawn_reward() -> Reward:
     """
     Spawn a new Reward sprite at a random position on the screen.
     :return: Reward sprite
     """
-    rx = float(random.randint(REWARD_SPAWN_OFFSET, SIZE[0] - REWARD_SPAWN_OFFSET))
-    ry = float(random.randint(REWARD_SPAWN_OFFSET + BAR_HEIGHT, SIZE[1] - REWARD_SPAWN_OFFSET))
+    rx = random.randint(REWARD_SPAWN_OFFSET, SIZE[0] - REWARD_SPAWN_OFFSET)
+    ry = random.randint(REWARD_SPAWN_OFFSET + BAR_HEIGHT, SIZE[1] - REWARD_SPAWN_OFFSET)
     return Reward((rx, ry))
 
 
@@ -50,11 +59,12 @@ def main():
     player = Player(CENTER)
     reward = spawn_reward()
     obstacle = Obstacle(player)
-    death_particles = ParticleEffect((player.x, player.y), True)
-    reward_particles = ParticleEffect(reward.pos)
+    death_particles = ParticleEffect(player_death=True)
+    reward_particles = ParticleEffect()
     score = Score(SIZE[0])
 
     running = True
+    state = GameState.RUNNING
     trigger_obs()
 
     while running:
@@ -63,13 +73,14 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                player.change_direction()
-            if event.type == spawn_obs_event:
+                if state == GameState.RUNNING:
+                    player.change_direction()
+            if event.type == spawn_obs_event and state == GameState.RUNNING:
                 obstacle.spawn()
-            if event.type == activate_obs_event:
+            if event.type == activate_obs_event and state == GameState.RUNNING:
                 obstacle.activate()
                 pygame.time.set_timer(deactivate_obs_event, 1500, loops=1)
-            if event.type == deactivate_obs_event:
+            if event.type == deactivate_obs_event and state == GameState.RUNNING:
                 obstacle.deactivate()
                 trigger_obs()
 
@@ -86,19 +97,20 @@ def main():
 
         # Updating
         clock.tick(FPS)
-        if player.alive:
-            player.move()
-            if pygame.sprite.collide_mask(player, reward):
-                reward_particles = ParticleEffect(reward.pos)
-                reward_particles.activate(reward.pos)
-                score.update(15)
-                print(f'Score: {score.score}')
-                reward = spawn_reward()
-            player.alive = not player.touching_edge(screen) and not \
-                (pygame.sprite.collide_mask(player, obstacle) and obstacle.is_active())
-        else:
-            print("Player dead.")
-            running = False
+        if state == GameState.RUNNING:
+            if player.alive:
+                player.move()
+                if pygame.sprite.collide_mask(player, reward):
+                    reward_particles = ParticleEffect()
+                    reward_particles.trigger(reward.pos)
+                    score.update(15)
+                    print(f'Score: {score.score}')
+                    reward = spawn_reward()
+                player.alive = not player.touching_edge(screen) and not \
+                    (pygame.sprite.collide_mask(player, obstacle) and obstacle.is_active())
+            else:
+                death_particles.trigger((player.x, player.y))
+                state = GameState.GAME_OVER
 
     pygame.quit()
 
