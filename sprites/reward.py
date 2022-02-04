@@ -10,7 +10,7 @@ class Reward(Sprite):
     A reward is the only way to increase the score in the game. It spawns in a random position on the
     main stage and adds 15 points to the score when it collides with the player.
     """
-    def __init__(self, pos: tuple[float, float]):
+    def __init__(self, pos: tuple[int, int]):
         super(Reward, self).__init__()
         self.img_src = pygame.image.load('resources/reward.png')
         self.image = self.img_src

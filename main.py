@@ -2,6 +2,7 @@ import random
 import pygame
 from pygame.constants import GL_MULTISAMPLEBUFFERS, GL_MULTISAMPLESAMPLES
 
+from particles.particles import ParticleEffect
 from sprites.obstacle import Obstacle
 from sprites.player import Player
 from sprites.reward import Reward
@@ -49,6 +50,8 @@ def main():
     player = Player(CENTER)
     reward = spawn_reward()
     obstacle = Obstacle(player)
+    death_particles = ParticleEffect((player.x, player.y), True)
+    reward_particles = ParticleEffect(reward.pos)
     score = Score(SIZE[0])
 
     running = True
@@ -75,7 +78,10 @@ def main():
         reward.draw(screen)
         player.draw(screen)
         obstacle.draw(screen)
+        reward_particles.draw(screen)
+        death_particles.draw(screen)
         score.draw(screen)
+
         pygame.display.flip()
 
         # Updating
@@ -83,6 +89,8 @@ def main():
         if player.alive:
             player.move()
             if pygame.sprite.collide_mask(player, reward):
+                reward_particles = ParticleEffect(reward.pos)
+                reward_particles.activate(reward.pos)
                 score.update(15)
                 print(f'Score: {score.score}')
                 reward = spawn_reward()
