@@ -11,7 +11,6 @@ from sprites.player import Player
 from sprites.reward import Reward
 from ui.score import BAR_HEIGHT, Score
 
-# Constants.
 from ui.play_button import PlayButton
 
 
@@ -33,6 +32,10 @@ def _spawn_reward() -> Reward:
 
 
 class Clicktate:
+    """
+    Represents the overall game including its sprites and game objects.
+    Maintains the score and game state.
+    """
     def __init__(self):
         self.player = Player(CENTER)
         self.reward = _spawn_reward()
@@ -44,6 +47,10 @@ class Clicktate:
         self.score = Score(SIZE[0])
 
     def render(self, screen: Surface):
+        """
+        Draw and render objects to the screen.
+        :param screen: Display surface.
+        """
         if self.state == GameState.RUNNING:
             self.player.draw(screen)
             self.reward.draw(screen)
@@ -56,6 +63,10 @@ class Clicktate:
         self.score.draw(screen)
 
     def update(self, screen: Surface):
+        """
+        Update the game (game tick).
+        :param screen: Display surface.
+        """
         if self.state == GameState.RUNNING:
             if self.player.alive:
                 self.player.move()
@@ -72,12 +83,19 @@ class Clicktate:
                 self.state = GameState.GAME_OVER
 
     def reset(self):
+        """
+        Reset the game (create a new game).
+        """
         self.player = Player(CENTER)
         self.reward = _spawn_reward()
         self.score.set_to_zero()
         self.state = GameState.RUNNING
 
     def handle_click(self):
+        """
+        Handle a mouse click, dependent on the game state.
+        :return:
+        """
         if self.state == GameState.RUNNING:
             self.player.change_direction()
         elif self.state == GameState.GAME_OVER:

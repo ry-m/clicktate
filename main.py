@@ -13,6 +13,10 @@ deactivate_obs_event = pygame.USEREVENT + 3
 
 
 def trigger_obs():
+    """
+    Trigger an obstacle spawn event and its follow-up obstacle activation form.
+    Obstacles are spawned every 5.5 to 10.5 seconds, chosen at random.
+    """
     time = random.randint(5500, 10500)
     pygame.time.set_timer(spawn_obs_event, time, loops=1)  # Spawn event.
     pygame.time.set_timer(activate_obs_event, time + 1000, loops=1)  # Activate event (1.5s after spawn)
@@ -23,10 +27,11 @@ def main():
     Main program loop.
     """
     pygame.init()
+
     screen = pygame.display.set_mode(SIZE, GL_MULTISAMPLEBUFFERS)
-    clock = pygame.time.Clock()
     pygame.display.gl_set_attribute(GL_MULTISAMPLESAMPLES, 3)
     pygame.display.set_caption('Clicktate')
+    clock = pygame.time.Clock()
 
     game = Clicktate()
 
@@ -52,7 +57,6 @@ def main():
         # Rendering.
         screen.fill(BG_COLOUR)
         game.render(screen)
-
         pygame.display.flip()
 
         # Updating

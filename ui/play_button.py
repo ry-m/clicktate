@@ -16,10 +16,18 @@ ACTIVE_SIZE = 120.0
 
 
 def scaled_image(image: Surface, size: float) -> Surface:
+    """
+    Perform a smooth scale transformation of an image.
+    :param image: Image source.
+    :param size: Size of the image to scale to.
+    """
     return pygame.transform.smoothscale(image, (size, size))
 
 
 class PlayButton(Sprite):
+    """
+    Represents the play/retry button.
+    """
     def __init__(self, is_retry_btn: bool = False, pos: tuple[int, int] = (0, 0)):
         super(PlayButton, self).__init__()
         self.img_src = RETRY_BUTTON if is_retry_btn else PLAY_BUTTON
@@ -31,6 +39,10 @@ class PlayButton(Sprite):
         self.active = False
 
     def draw(self, screen: Surface):
+        """
+        Draw the button to the surface.
+        :param screen: Display surface.
+        """
         # Move sprite to center.
         self.pos = (
             self.pos[0] + (screen.get_width() / 2 - self.pos[0]) * 0.2,
@@ -41,7 +53,7 @@ class PlayButton(Sprite):
         touching = math.dist(mouse_pos, self.pos) <= self.size / 2
         self.active = touching
 
-        # Set image and
+        # Set image.
         if self.is_retry_btn:
             self.img_src = RETRY_BUTTON_ACTIVE if touching else RETRY_BUTTON
         else:

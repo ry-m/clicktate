@@ -7,6 +7,9 @@ TEXT_COLOUR = (50, 110, 80, 0)
 
 
 class Score:
+    """
+    Score bar.
+    """
     def __init__(self, screen_w: int):
         pygame.font.init()
         self.width = screen_w
@@ -18,13 +21,27 @@ class Score:
         self.best_text = self.font_lt.render('BEST:', True, TEXT_COLOUR)
 
     def update(self, i: int):
+        """
+        Increase and update the score.
+        :param i: Score increase.
+        """
         self.score += i
         self.best = max(self.best, self.score)
 
     def set_to_zero(self):
+        """
+        Set the score to zero (maintain the best score).
+        :return:
+        """
         self.score = 0
 
     def draw(self, screen: Surface):
+        """
+        Draw the score bar to the screen.
+        Consists of a white bar with score and best text.
+        :param screen:
+        :return:
+        """
         bar = Surface((self.width, BAR_HEIGHT))
         bar.fill((255, 255, 255, 0))
         bar_rect = bar.get_rect(center=(self.width / 2, BAR_HEIGHT / 2))
