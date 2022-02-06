@@ -88,6 +88,7 @@ class Clicktate:
         """
         self.player = Player(CENTER)
         self.reward = _spawn_reward()
+        self.obstacle = Obstacle(self.player)
         self.score.set_to_zero()
         self.state = GameState.RUNNING
 
