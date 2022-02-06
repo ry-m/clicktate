@@ -5,11 +5,12 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 
-import score
+from ui import score
 
 RADIUS = 12
-SPEED = 2
+SPEED = 3
 SIZE = 24
+BUTTON_SIZE = 100
 
 
 class Direction(Enum):
@@ -27,14 +28,13 @@ class Player(Sprite):
     """
     The player sprite is represented as a filled black circle.
     """
-    def __init__(self, pos: tuple[float, float]):
+    def __init__(self, pos: tuple[int, int]):
         super(Player, self).__init__()
-        self.image = pygame.image.load("resources/player.png")
+        self.image = pygame.image.load('resources/player.png')
         self.image = pygame.transform.smoothscale(self.image, (SIZE, SIZE))
+        self.pos = pos
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)
-        self.x = self.rect.center[0]
-        self.y = self.rect.center[1]
         self.all_dirs = cycle([Direction.NORTH_WEST, Direction.SOUTH_WEST, Direction.SOUTH_EAST, Direction.NORTH_EAST])
         self.direction = next(self.all_dirs)
         self.alive = True
@@ -45,9 +45,9 @@ class Player(Sprite):
         :param x: x position
         :param y: y position
         """
-        self.x = x
-        self.y = y
-        self.rect.center = (x, y)
+        pos = (x, y)
+        self.pos = pos
+        self.rect.center = pos
 
     def draw(self, surface: pygame.Surface):
         """
@@ -62,8 +62,8 @@ class Player(Sprite):
         Move the sprite in its current diagonal direction.
         """
         self.set_pos(
-            self.x + self.direction.value[0] * SPEED,
-            self.y + self.direction.value[1] * SPEED
+            self.pos[0] + self.direction.value[0] * SPEED,
+            self.pos[1] + self.direction.value[1] * SPEED
         )
 
     def change_direction(self):
@@ -79,4 +79,8 @@ class Player(Sprite):
         :return: True if the player is touching the edge.
         """
         sx, sy = screen.get_size()
-        return self.x+RADIUS > sx or self.y+RADIUS > sy or self.x-RADIUS < 0 or self.y-RADIUS < score.BAR_HEIGHT
+        return \
+            self.pos[0] + RADIUS > sx \
+            or self.pos[1] + RADIUS > sy \
+            or self.pos[0] - RADIUS < 0 \
+            or self.pos[1] - RADIUS < score.BAR_HEIGHT

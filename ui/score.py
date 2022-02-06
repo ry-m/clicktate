@@ -21,6 +21,9 @@ class Score:
         self.score += i
         self.best = max(self.best, self.score)
 
+    def set_to_zero(self):
+        self.score = 0
+
     def draw(self, screen: Surface):
         bar = Surface((self.width, BAR_HEIGHT))
         bar.fill((255, 255, 255, 0))

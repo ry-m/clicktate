@@ -47,8 +47,8 @@ class Obstacle(Sprite):
         Retrieve the offset position from the player's current position.
         :return: Coordinates of the obstacle position.
         """
-        ox = self.player.x + self.player.direction.value[0]*DIST_FROM_PLAYER
-        oy = self.player.y + self.player.direction.value[1]*DIST_FROM_PLAYER
+        ox = self.player.pos[0] + self.player.direction.value[0]*DIST_FROM_PLAYER
+        oy = self.player.pos[1] + self.player.direction.value[1]*DIST_FROM_PLAYER
         return float(ox), float(oy)
 
     def spawn(self):
